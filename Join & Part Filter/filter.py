@@ -1,0 +1,1 @@
+/home/germain/.config/hexchat/addons/filter.py
