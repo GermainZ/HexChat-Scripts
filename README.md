@@ -1,7 +1,7 @@
 HexChat-Scripts
 ===============
-
-Some of my HexChat scripts.
+Some of my HexChat scripts. Those in the 'Other' folder are not commented yet,
+and/or need improvement.
 
 Installation:
 =============
