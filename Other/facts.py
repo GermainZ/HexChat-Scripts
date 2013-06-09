@@ -34,25 +34,23 @@ def get_args(word):
         args = None
     if args:
         try:
-            title = args[0]
+            arg1 = args[0]
         except IndexError:
-            title = None
+            arg1 = None
         try:
-            content = args[1]
+            arg2 = args[1]
         except IndexError:
-            content = None
+            arg2 = None
     else:
-        title = None
-        content = None
-    return user, action, title, content
+        arg1 = None
+        arg2 = None
+    return user, action, arg1, arg2
 
 def chan_command(word, word_eol, userdata):
     channel = xchat.get_info('channel')
     command = xchat.strip(word[1].split(' ', 1)[0])
     if channel.lower() in data.allowed_chans:
         user, action, title, content = get_args(word)
-        #xchat.prnt("command: %s, user: %s, action: %s, title: %s, content: %s" % (command, user, action, title, content))
-        #raise IndexError
         if command == "#f":
             if action in data.commands:
                 if action == data.commands[0]:
@@ -70,15 +68,19 @@ def chan_command(word, word_eol, userdata):
                         send_message(channel, "Error removing fact from database - specified title?")
                 elif action == data.commands[2]:
                     c.execute("SELECT * FROM facts")
-                    msg = "\00306"
+                    msg = "::\00306"
                     for row in c.fetchall():
                         msg = ''.join([msg, '\003: \00302"'.join(row), '"\003, \00306'])
                     send_message(channel, msg[:-6])
+        elif command == "#give":
+            fact = getfact(title)
+            if fact:
+                send_message(channel, "::%s: %s" % (action, fact))
         elif command.startswith("#"):
             title = command[1:]
             fact = getfact(title)
             if fact:
-                send_message(channel, '\00307' + fact)
+                send_message(channel, '::\00307' + fact)
 
 def getfact(title):
         c.execute("SELECT * FROM facts WHERE title=?", (title,))
@@ -88,7 +90,7 @@ def getfact(title):
                 fact = fact.split("<reply>", 1)[1].strip()
             else:
                 fact = "%s: %s" % (title, fact)
-            return "::%s" % fact
+            return "%s" % fact
         except TypeError:
             return None
             raise

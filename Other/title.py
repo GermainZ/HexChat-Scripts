@@ -101,7 +101,7 @@ def gettitle(event, urls, username):
         except Exception, e:
             msg = ''.join([color["lgrey"],
                           '::Could not get webpage title for ',
-                          url, " because of: ", str(e)])
+                          url]) #, " because of: ", str(e)])
             #xchat.prnt(str(e))
         event.set()
     done = 1

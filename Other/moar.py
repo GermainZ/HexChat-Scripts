@@ -6,7 +6,7 @@ import xchat
 import random
 import re
 
-# Quickly adapted from supybot
+# Adapted from supybot
 
 def aol(text):
     """<text>
