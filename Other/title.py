@@ -7,7 +7,8 @@ import re
 import urllib2
 import threading
 import xchat
-import lxml.html
+import BeautifulSoup
+#~ import lxml.html
 
 color = {'white': "\00300", 'black': "\00301", 'blue': "\00302",
         'green': "\00303", 'lred': "\00304", 'brown': "\00305",
@@ -50,14 +51,15 @@ def title(word, word_eol, userdata):
                 ignore=1
         if ignore == 0 and ignorep == 0 and "http" in word_eol[0]:
             url=word_eol[0]
-            temp_urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]'
+            temp_urls = re.findall('(?<!<)http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]'
                               '|[!*\(\),]|(?:%[0-9a-fA-F]'
                               '[0-9a-fA-F]))+', url)
             urls=[]
             for url in temp_urls:
                 if not url.lower().endswith(('.jpg', '.gif', '.png', '.jpeg',
-                                     '.pdf')):
+                                             '.pdf')):
                     urls.append(url)
+                    #~ print "'%s'" % url
             if not urls:
                 return xchat.EAT_NONE
             event = threading.Event()
@@ -86,22 +88,21 @@ def gettitle(event, urls, username):
             msg = ''.join([color["lgrey"], 'Hey ', username,
                             ', don\'t be so abusive!'])
             break
-        ##wtitle = lxml.html.parse(url).find(".//title").text
         try:
             req = urllib2.Request(url, headers={'User-Agent': "HexChat"})
             wpage = urllib2.urlopen(req)
-            wtitle = lxml.html.parse(wpage)
-            wtitle = wtitle.xpath("//title/text()")[0]
-            #soup = BeautifulSoup.BeautifulSoup(urllib2.urlopen(url))
-            #wtitle = soup.title.string
-            msg = ''.join([color["lgrey"], '::Title: ', color["orange"],
+            #~ wtitle = lxml.html.parse(wpage)
+            #~ wtitle = wtitle.xpath("//title/text()")[0]
+            soup = BeautifulSoup.BeautifulSoup(wpage)
+            wtitle = soup.title.string
+            msg = ''.join([color["lgrey"], 'Title: ', color["orange"],
                           wtitle, color["lgrey"], ' - ', color["cyan"],
-                          url])
+                          '<', url, '>'])
             msg = msg.encode('utf-8')
         except Exception, e:
             msg = ''.join([color["lgrey"],
                           '::Could not get webpage title for ',
-                          url]) #, " because of: ", str(e)])
+                          url, " because of: ", str(e)])
             #xchat.prnt(str(e))
         event.set()
     done = 1

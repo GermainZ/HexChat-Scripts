@@ -6,6 +6,7 @@ import xchat
 import sqlite3
 
 conn = sqlite3.connect('/home/germain/.config/hexchat/addons/data/facts.db')
+conn.text_factory = str
 c = conn.cursor()
 
 try:
@@ -68,19 +69,19 @@ def chan_command(word, word_eol, userdata):
                         send_message(channel, "Error removing fact from database - specified title?")
                 elif action == data.commands[2]:
                     c.execute("SELECT * FROM facts")
-                    msg = "::\00306"
+                    msg = "\00306"
                     for row in c.fetchall():
                         msg = ''.join([msg, '\003: \00302"'.join(row), '"\003, \00306'])
                     send_message(channel, msg[:-6])
         elif command == "#give":
             fact = getfact(title)
             if fact:
-                send_message(channel, "::%s: %s" % (action, fact))
+                send_message(channel, "%s: %s" % (action, fact))
         elif command.startswith("#"):
             title = command[1:]
             fact = getfact(title)
             if fact:
-                send_message(channel, '::\00307' + fact)
+                send_message(channel, '\00307' + fact)
 
 def getfact(title):
         c.execute("SELECT * FROM facts WHERE title=?", (title,))

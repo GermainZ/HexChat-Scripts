@@ -36,8 +36,7 @@ class Gun:
         self.challenger = challenger
         self.challenged = challenged
         if challenger:
-            self.append_text = "".join(["[", challenger, " vs ",
-                                        ' vs '.join(challenged), "]"])
+            self.append_text = "[ %s vs %s ]" % (challenger, challenged)
         else:
             self.append_text = "[FreeForAll - %s]" % self.channel
 
@@ -46,22 +45,21 @@ class Gun:
         Returns True if the gun fires, False otherwise.
         
         """
-        msg = ""
-        msg = ''.join([self.append_text, " - "])
+        msg = "%s - " % self.append_text
         # First round in this game - include a start message.
         if not self.last_user:
-            msg = ''.join([msg, choice(start_messages), " "])
+            msg = "%s %s " % (msg, choice(start_messages))
         # Fires the gun. Repetitive firing is not allowed.
         if user != self.last_user:
             self.last_user = user
-            msg = ''.join([msg, choice(fire_messages), " "])
+            msg = msg + choice(fire_messages) + " "
             send_message(self.channel, user, msg)
             if randint(1, self.bullets) == 1:
-                msg = ''.join(["\00304", choice(death_messages)])
+                msg = "\00304%s" % choice(death_messages)
                 send_message(self.channel, user, msg)
                 return True
             else:
-                msg = ''.join(["\00302", choice(life_messages)])
+                msg = "\00302%s" % choice(life_messages)
                 send_message(self.channel, user, msg)
             self.bullets -= 1
         # User is trying to fire twice in a row.
@@ -95,11 +93,9 @@ def challenge(channel, user, args):
         # This links all persons in the same challenge together.
         for challenged in args:
             guns[challenged] = user
-        send_message(channel, user, ''.join([("%(nick)s started a new"
-                                              " challenge with... "),
-                                              ', '.join(args), "!",
-                                              (" '#r challenge' pulls the"
-                                              " trigger!")]))
+        send_message(channel, user, ("%(nick)s started a new challenge with..."
+                                    " %s! '#r challenge' pulls the trigger!"
+                                    % (', '.join(args))))
     else:
         # User is already in a challenge.
         if user in guns:

@@ -57,12 +57,12 @@ def google_query(mySearch, channel):
         json     = simplejson.loads( response.read() )
         if json ['responseStatus'] == 200 and len( json ['responseData'] ['results'] ) > 1:
             results = json [ 'responseData' ] [ 'results' ]
-            xchat.command( 'msg ' + channel + ' ' + color["purple"] + '=== Searching for ' + mySearch)
+            xchat.command( 'msg ' + channel + ' ' + color["purple"] + 'Searching for ' + mySearch)
             for item in results[0:3]:
                 title = item[ 'title' ].encode( 'utf8' ).replace ( '<b>', '' ).replace ( '</b>', '' ).replace ( '&lt;', '<' ).replace ( '&gt;', '>' ).replace ( '&amp;', '&' ).replace ( '&quot;', '"' ).replace ( '&#39;', '\'' )
                 url   = item[ 'url' ].encode( 'utf8' ).replace ( '%3B', ';' ).replace ( '%3F', '?' ).replace ( '%2F', '/' ).replace ( '%3A', ':' ).replace ( '%23', '#' ).replace ( '%26', '&' ).replace ( '%3D', '=' ).replace ( '%2B', '+' ).replace ( '%24', '$' ).replace ( '%2C', ',' ).replace ( '%20', ' ' ).replace ( '%25', '%' ).replace ( '%3C', '<' ).replace ( '%3E', '>' ).replace ( '%7E', '~' ).replace ( '%7B', '{' ).replace ( '%7D', '}' ).replace ( '%7C', '|' ).replace ( '%5C', '\\' ).replace ( '%5E', '^' ).replace ( '%5B', '[' ).replace ( '%5D', ']' ).replace ( '%60', '`' ).replace ( '%40', '@' )
-                xchat.command( 'msg ' + channel + ' ' + title + color["blue"] + ' ' + url + color["nocolor"] )
-            xchat.command( 'msg ' + channel + ' ' + color["purple"] + '=== Powered by ' + color["blue"] + 'G' + color["lred"] + 'o' + color["yellow"] + 'o' + color["blue"] + 'g' + color["lcyan"] + 'l' + color["lred"] + 'e' + color["purple"] + ' Web Search' + color["nocolor"] )
+                xchat.command( 'msg ' + channel + ' ' + title + color["blue"] + ' <' + url + '>' + color["nocolor"] )
+            xchat.command( 'msg ' + channel + ' ' + color["purple"] + 'Powered by ' + color["blue"] + 'G' + color["lred"] + 'o' + color["yellow"] + 'o' + color["blue"] + 'g' + color["lcyan"] + 'l' + color["lred"] + 'e' + color["purple"] + ' Web Search' + color["nocolor"] )
         else:
             xchat.command( 'msg ' + channel + ' ' + color["purple"] + 'Your search returned no results.' + color["nocolor"] ) 
     except Exception, args:

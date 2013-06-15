@@ -104,7 +104,7 @@ def getlyrics(event, artist, title):
     msg.append(color["cyan"] + artist + " - " + title)
     for line in lyrics[:4]:
         msg.append(color["lcyan"] + line)
-    msg.append(color["cyan"] + "::Lyrics from: " + doc.docinfo.URL)
+    msg.append(color["cyan"] + "::Lyrics from: <" + doc.docinfo.URL + ">")
     event.set()
     return
 

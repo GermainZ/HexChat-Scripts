@@ -67,6 +67,7 @@ def get_user_info(event, username):
     stats_v = wpage.xpath('//fieldset[@class="statistics_group"]/ul/li/text()')
     msg = ["Stats for %s (%s):" % (stats_u[0], stats_u[1])]
     msg.extend(["          %s%s" % (t, v) for t, v in zip(stats_t, stats_v)])
+    msg.append("          <%s>" % url)
     event.set()
 
 def google_query(username):
@@ -83,11 +84,11 @@ def google_query(username):
                 url = url.replace(key, value)
             if url.startswith("http://forum.xda-developers.com/member.php?u="):
                 return url
-            else:
-                print str(url)
+            #~ else:
+                #~ print str(url)
     else:
-        print "resp: " + str(json['responseStatus'])
-        print "len: " + str(len(json['responseData']['results']))
+        #~ print "resp: " + str(json['responseStatus'])
+        #~ print "len: " + str(len(json['responseData']['results']))
         return
 
 xchat.hook_print('Channel Msg Hilight', handler)
