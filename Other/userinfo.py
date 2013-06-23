@@ -46,7 +46,7 @@ def send_message(userdata):
     event, channel = userdata
     if event.isSet():
         for message in msg:
-            xchat.command('msg ' + channel + ' ' + message)
+            xchat.command('msg ' + channel + ' ' + message.encode('utf-8'))
         event.clear()
         return 0
     else:
@@ -82,10 +82,10 @@ def google_query(username):
             url = item['url'].encode('utf8')
             for  key, value in replace_dict.iteritems():
                 url = url.replace(key, value)
-            if url.startswith("http://forum.xda-developers.com/member.php?u="):
+            if url.startswith("http://forum.xda-developers.com/member.php"):
                 return url
-            #~ else:
-                #~ print str(url)
+            # else:
+                # print str(url)
     else:
         #~ print "resp: " + str(json['responseStatus'])
         #~ print "len: " + str(len(json['responseData']['results']))
