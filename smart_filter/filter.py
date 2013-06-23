@@ -26,8 +26,15 @@ def new_msg(word, word_eol, userdata):
     # If the user has never spoken before, let us know when he logged in.
     if last_seen[user][1] == 0:
         time_diff = time() - last_seen[user][0]
-        xchat.prnt("%s\t\017%s \00307(logged in %ss ago)" % (word[0], word[1],
-                                                          int(time_diff)))
+        # Bold the username and color the text if it's a hilight
+        if userdata == "Hilight":
+            s_user = "\002" + word[0]
+            s_msg = "\00319" + word[1]
+        else:
+            s_user = word[0]
+            s_msg = "\017" + word[1]
+        xchat.prnt("%s\t%s \00307(logged in %ss ago)" % (s_user, s_msg,
+                                                         int(time_diff)))
         last_seen[user]= [time(), 1]
         return xchat.EAT_XCHAT
     else:
@@ -62,7 +69,9 @@ def filter_msg(word, word_eol, userdata):
 
 
 xchat.hook_print('Channel Message', new_msg)
-xchat.hook_print('Channel Msg Hilight', new_msg)
+xchat.hook_print('Channel Msg Hilight', new_msg, "Hilight")
+xchat.hook_print('Channel Action', new_msg)
+xchat.hook_print('Channel Action Hilight', new_msg, "Hilight")
 xchat.hook_print('Join', filter_msg, 'Join')
 xchat.hook_print('Change Nick', filter_msg, 'Nick')
 xchat.hook_print('Part', filter_msg)
