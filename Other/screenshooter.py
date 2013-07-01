@@ -14,4 +14,4 @@ def screenshot(word, word_eol, userdata):
 
 xchat.hook_print('Your Message', screenshot)
 
-print "\00304", __module_name__, "successfully loaded.\003"
+print("\00304", __module_name__, "successfully loaded.\003")

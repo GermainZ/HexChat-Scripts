@@ -120,4 +120,4 @@ xchat.hook_print('Channel Msg Hilight', chan_command)
 xchat.hook_print('Channel Message', chan_command)
 xchat.hook_print('Your Message', chan_command)
 
-print "\00304", __module_name__, "successfully loaded.\003"
+print("\00304", __module_name__, "successfully loaded.\003")

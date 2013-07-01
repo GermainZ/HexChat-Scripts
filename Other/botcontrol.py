@@ -19,4 +19,4 @@ def botcontrol(word, word_eol, userdata):
 
 xchat.hook_print('Your Message', botcontrol)
 
-print "\00304", __module_name__, "successfully loaded.\003"
+print("\00304", __module_name__, "successfully loaded.\003")

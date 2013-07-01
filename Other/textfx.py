@@ -54,4 +54,4 @@ def color(word, word_eol, userdata):
 xchat.hook_command("RAINBOW", rainbow_trigger, help="/RAINBOW <message> %s" % (rainbow_desc))
 xchat.hook_command("COLOR", color, help="/COLOR <color> <message> %s" % (color_desc))
 
-print "\00304", __module_name__, "successfully loaded.\003"
+print("\00304", __module_name__, "successfully loaded.\003")

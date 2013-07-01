@@ -5,7 +5,6 @@ __module_description__ = 'Executes bash commands'
 import os
 import xchat
 
-
 def exec_command(word, word_eol, userdata):
     if word[1].startswith('#exec'):
         bashCommand = ''.join(word_eol[1].split(' ', 1)[1])
@@ -20,6 +19,7 @@ def exec_command(word, word_eol, userdata):
         command = 'mem=`ps aux | grep ' + arg_ + ' | while IFS=" " read -ra line; do echo ${line[5]}; done | paste -sd+ | bc`; echo Memory usage of ' + arg + ': $mem KB'
         xchat.command('exec -o ' + command)
 
+
 xchat.hook_print('Your Message', exec_command)
 
-print "\00304", __module_name__, "successfully loaded.\003"
+print("\00304", __module_name__, "successfully loaded.\003")

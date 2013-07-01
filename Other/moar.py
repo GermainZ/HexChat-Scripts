@@ -138,3 +138,5 @@ def moar(word, word_eol, userdata):
 xchat.hook_print('Channel Msg Hilight', moar)
 xchat.hook_print('Channel Message', moar)
 xchat.hook_print('Your Message', moar)
+
+print("\00304", __module_name__, "successfully loaded.\003")
