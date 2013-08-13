@@ -5,8 +5,9 @@ __module_description__ = 'Gets links\' titles'
 import re
 try:
     from urllib.request import urlopen, Request
+    from urllib.parse import urlparse
 except ImportError:
-    from urllib2 import urlopen, Request
+    from urllib2 import urlopen, Request, urlparse
 from multiprocessing.pool import ThreadPool
 import xchat
 import lxml.html
@@ -32,16 +33,20 @@ def gettitle(urls, pool, context):
         try:
             req = Request(url, headers={'User-Agent': "HexChat"})
             wpage = urlopen(req)
+            domain = urlparse(url).netloc
             wtitle = lxml.html.parse(wpage)
             wtitle = wtitle.xpath("//title/text()")[0]
             wtitle = ' '.join(wtitle.split()) # Remove line breaks and tabs
-            msg = "Title: %s - \00307<%s>" % (wtitle, url)
+            msg = "Title: %s (at \00307<%s>\017)" % (wtitle, domain)
         except Exception:
-            msg = "Could not get webpage title for <%s>"
+            pass
+            #return None
         result.append(msg)
     return (result, pool, context)
 
 def send_message(args): #result, pool, context):
+    if args is None:
+        return
     result, pool, context = args
     pool.close()
     for msg in result:

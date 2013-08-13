@@ -2,12 +2,15 @@ __module_name__ = 'XDA User info'
 __module_version__ = '1.0.12'
 __module_description__ = 'Gets an XDA User\'s info'
  
-import simplejson
-import urllib
-import urllib2
+import json
 import xchat
 import lxml.html
-import threading
+from multiprocessing.pool import ThreadPool
+try:
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlopen, urlencode
 
 msg = []
 replace_dict = {'%3B': ';', '%3F': '?', '%2F': '/','%3A': ':', '%23': '#',
@@ -30,37 +33,28 @@ def get_args(word):
         username = None
     return command, username
 
-def handler( word, word_eol, userdata ):
+def handler(word, word_eol, userdata):
     channel = xchat.get_info('channel')
     command, username = get_args(word)
     if channel.lower() in channels.allowed and command == "#userinfo":
-        event = threading.Event()
-        infothread = threading.Thread(target=get_user_info,
-                                   args=(event, username))
-        infothread.start()
-        xchat.hook_timer(100, send_message, (event, channel))
-        return xchat.EAT_NONE
+        context = xchat.get_context()
+        pool = ThreadPool(processes=1)
+        pool.apply_async(get_user_info, (username, pool, context),
+                         callback=send_message)
+        return
 
-def send_message(userdata):
-    global msg
-    event, channel = userdata
-    if event.isSet():
-        for message in msg:
-            xchat.command('msg ' + channel + ' ' + message.encode('utf-8'))
-        event.clear()
-        return 0
-    else:
-        return 1
+def send_message(args):
+    result, pool, context = args
+    pool.close()
+    for msg in result:
+        context.command("say " + msg)
 
-
-def get_user_info(event, username):
+def get_user_info(username, pool, context):
     global msg
     url = google_query(username)
     if url is None:
-        msg = ["Username %s not found." % username]
-        event.set()
-        return
-    wpage = urllib2.urlopen(url)
+        return (["Username %s not found." % username], pool, context)
+    wpage = urlopen(url)
     wpage = lxml.html.parse(wpage)
     stats_u = wpage.xpath('//div[@class="nametitle"]/descendant::*/text()')
     stats_t = wpage.xpath('//fieldset[@class="statistics_group"]/ul/li/span[@class="shade"]/text()')
@@ -68,31 +62,28 @@ def get_user_info(event, username):
     msg = ["Stats for %s (%s):" % (stats_u[0], stats_u[1])]
     msg.extend(["          %s%s" % (t, v) for t, v in zip(stats_t, stats_v)])
     msg.append("          <%s>" % url)
-    event.set()
+    return (msg, pool, context)
+
 
 def google_query(username):
-    baseurl = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=large&'
-    query = urllib.urlencode({'q': "\"View Profile: %s\" site:xda-developers.com" % username})
-    fullurl = baseurl + query.encode('utf8')
-    response = urllib2.urlopen(fullurl)
-    json = simplejson.loads(response.read())
-    if json['responseStatus'] == 200 and len(json['responseData']['results']) >= 1:
-        results = json ['responseData'] ['results']
+    baseurl = 'http://ajax.googleapis.com/ajax/services/search/web?v=1.0&rsz=1&'
+    url = baseurl + urlencode({'q': ("\"View Profile: %s\""
+                                     " site:xda-developers.com" % username)})
+    resp = urlopen(url)
+    resp = json.loads(resp.read().decode())
+    if resp.get('responseStatus') == 200:
+        results = resp.get('responseData').get('results')
+        if len(results) < 1:
+            return
         for item in results:
-            url = item['url'].encode('utf8')
-            for  key, value in replace_dict.iteritems():
+            url = item['url']
+            for  key, value in replace_dict.items():
                 url = url.replace(key, value)
             if url.startswith("http://forum.xda-developers.com/member.php"):
                 return url
-            # else:
-                # print str(url)
-    else:
-        #~ print "resp: " + str(json['responseStatus'])
-        #~ print "len: " + str(len(json['responseData']['results']))
-        return
 
 xchat.hook_print('Channel Msg Hilight', handler)
 xchat.hook_print('Channel Message', handler)
 xchat.hook_print('Your Message', handler)
 
-print "\00304", __module_name__, "successfully loaded.\003"
+print("\00304", __module_name__, "successfully loaded.\003")

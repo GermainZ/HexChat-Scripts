@@ -7,8 +7,11 @@ import json
 from multiprocessing.pool import ThreadPool
 try:
     from urllib.request import urlopen
+    from urllib.parse import urlencode
 except ImportError:
-    from urllib import urlopen
+    from urllib import urlopen, urlencode
+
+
 replace_dict = {'<b>' : "", '</b>': "", '&lt': "<", '&gt': ">", '&amp': "&",
                 '&quot;':"\"", '&#39;': "\'"}
 
@@ -35,7 +38,8 @@ def google(word, word_eol, userdata):
 def google_query(search, results, pool, context):
     baseurl = ("http://ajax.googleapis.com/ajax/services/search/"
                "web?v=1.0&rsz=%s&" % results)
-    url = baseurl + "&q=" + search.rstrip()
+    #url = baseurl + "&q=" + search.rstrip()
+    url = baseurl + urlencode({'q': search.rstrip()})
     resp = urlopen(url)
     resp = json.loads(resp.read().decode())
     if resp.get('responseStatus') == 200:
